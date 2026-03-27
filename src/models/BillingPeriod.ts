@@ -1,4 +1,4 @@
-export interface BillingPeriod {
+export interface IBillingPeriod {
   id: string;
   startDate: string;
   endDate: string;
