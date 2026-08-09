@@ -56,14 +56,16 @@ defineProps<{
         </p>    
 
         </ion-card-content>
+
+        
   </ion-card>
 </template>
 
 <style scoped>
 
 .input-field.active-editing {
-  --background: #f0f0f0; /* Hier deine Wunschfarbe eintragen (z.B. ein helles Grau oder ein leichtes Blau #e8f0fe) */
-  border-radius: 8px;    /* Optional: Schöne abgerundete Ecken */
+  --background: #f0f0f0; 
+  border-radius: 8px;    
 }
 .editing {
     --background: #f0f0f0;
