@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { IonCard, IonCardHeader, IonCardTitle, IonItem, IonIcon, IonInput, IonButton } from '@ionic/vue'
 import { pencilSharp, helpCircleOutline } from 'ionicons/icons'
-import { ref} from 'vue'
-
-const isEditing = ref(true);
+import { ref, watch} from 'vue'
 
 const model = defineModel<number>(); 
-
 
 defineProps<{
     title: string,
@@ -14,6 +11,13 @@ defineProps<{
     placeholderValue?: string 
 }>()
 
+const isEditing = ref(!model.value);
+
+watch(model, (newValue) => {
+  if (newValue !== undefined) {
+    isEditing.value = false;
+  }
+}, { immediate: true });
 
 </script>
 
