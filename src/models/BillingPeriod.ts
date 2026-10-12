@@ -4,6 +4,7 @@ export interface IBillingPeriod {
   endDate?: string;
   grossBasePrice?: number;
   grossConsumptionPrice?: number;
+  startReading?: number;
   isActive?: boolean;
 }
 
