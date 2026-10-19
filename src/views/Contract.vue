@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { IonPage, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonToast } from '@ionic/vue';
+import { IonPage, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonToast} from '@ionic/vue';
 import ContractInputField from '../components/ContractInputField.vue'
 import PrimaryButton from '../components/buttons/PrimaryButton.vue'
 import { ref, computed, onMounted } from 'vue';
 import type { IAppData } from '../models/IAppData.ts';
+import { star } from 'ionicons/icons';
 
 const basePrice = ref<number>();
 const pricePerkWh = ref<number>();
@@ -11,6 +12,7 @@ const monthlyInstallment = ref<number>();
 const isToastOpen = ref(false);
 const toastText = ref('');
 const savedContractData = ref<IAppData>();
+const startReadingInput = ref<number>();
 
 
 const setIsToastOpen = (state: boolean) => {
@@ -21,7 +23,8 @@ const isFormValid = computed(() => {
   return (
     basePrice.value !== undefined && basePrice.value > 0 &&
     pricePerkWh.value !== undefined && pricePerkWh.value > 0 &&
-    monthlyInstallment.value !== undefined && monthlyInstallment.value > 0
+    monthlyInstallment.value !== undefined && monthlyInstallment.value > 0 &&
+    startReadingInput.value !== undefined && startReadingInput.value >0
   );
 });
 
@@ -39,6 +42,7 @@ const lastAdvancePayment = computed(() => {
   const payments = savedContractData.value?.advancePayment; 
   return payments && payments.length > 0 ? payments[payments.length -1] : undefined;
 });
+
 
 // isDirty = Ziel : sind die vom Nutzer eingebenen Werte gleich der letzen eingetragenen Werte ?
 const isDirty = computed(() => {
@@ -66,12 +70,15 @@ onMounted (() => {
 
     basePrice.value = lastPeriod.value?.grossBasePrice;
     pricePerkWh.value = lastPeriod.value?.grossConsumptionPrice;
+    startReadingInput.value = lastPeriod.value?.startReading;
     monthlyInstallment.value = lastAdvancePayment.value?.grossAmount;
+    
   }
 
   else{
     basePrice.value = undefined;
     pricePerkWh.value = undefined;
+    startReadingInput.value = undefined;
     monthlyInstallment.value = undefined;
   }
 });
@@ -95,45 +102,37 @@ function saveContractData(){
     setIsToastOpen(true);
     return;
   }
-
-  //wenn alles passt neue Objekte bauen.
-  // Period
-  const newPeriod = {
-    grossBasePrice: Number(basePrice.value),
-    grossConsumptionPrice: Number(pricePerkWh.value),
-  };
-
-  const newPayment = {
-    grossAmount: Number(monthlyInstallment.value),
-  };
-
-  savedContractData.value = {
-  ...savedContractData.value, // 1. Alle anderen Eigenschaften des Ober-Objekts behalten
-  
+// wenn alles passt -> speichern.
+// zu speichern: 
+    // IBillingPeriod : grossBasePrice 
+    //                  grossConsumtionPrice
+    //                  startReading
+    //IAdvancePayment : grossAmount 
+savedContractData.value = {
+  ...(savedContractData.value ?? {
+    advancePayment: [],
+    billingPeriod: [],
+    meterReading: [],
+  }),
   billingPeriod: [
-  ...(savedContractData.value?.billingPeriod ?? []), // <- Komma hier!
-  newPeriod
-],
+    {
+      grossBasePrice: Number(basePrice.value),
+      grossConsumptionPrice: Number(pricePerkWh.value),
+      startReading: Number(startReadingInput.value),
+    },
+  ],
+  advancePayment:[
+    {
+    grossAmount : Number(monthlyInstallment.value),
+    },  
+  ],
 
-advancePayment: [
-  ...(savedContractData.value?.advancePayment ?? []), // <- Schließende Klammer + Komma!
-  newPayment
-],
-meterReading: savedContractData.value?.meterReading ?? [],
+ 
 };
 
-// 1. Objekt in JSON-String umwandeln
-const appDataJson = JSON.stringify(savedContractData.value);
-
-// 2. Im localStorage unter 'AppData' speichern
-localStorage.setItem('AppData', appDataJson);
-console.log(savedContractData.value);
-
-console.log("LocalStorage AppData:", JSON.parse(localStorage.getItem('AppData') || '{}'));
-
-console.log("Aktuelle AppData:", JSON.parse(JSON.stringify(savedContractData.value)));
+localStorage.setItem('AppData', JSON.stringify(savedContractData.value));
+console.log("Gespeichert:", savedContractData.value);
 }
-
 
 </script>
 
@@ -166,6 +165,7 @@ console.log("Aktuelle AppData:", JSON.parse(JSON.stringify(savedContractData.val
                     v-model="basePrice"
                     placeholderValue="8"
                     text="Bitte Grundpreis hinterlegen"
+                    unittext="€"
                     /> 
 
         <ContractInputField 
@@ -173,6 +173,8 @@ console.log("Aktuelle AppData:", JSON.parse(JSON.stringify(savedContractData.val
                     v-model="pricePerkWh"
                     placeholderValue="0.34"
                     text="Bitte den Preis pro kWh hinterlegen"
+                    unittext="€"
+                    step-value="0.01"
                     /> 
         
         <ContractInputField 
@@ -180,7 +182,17 @@ console.log("Aktuelle AppData:", JSON.parse(JSON.stringify(savedContractData.val
                     v-model="monthlyInstallment"
                     placeholderValue="40"
                     text="Bitte den monatlichen Abschlag hinterlegen"
+                    unittext="€"
                     /> 
+
+        <ContractInputField 
+                    title="Zählerstand bei Turnusbeginn"
+                    v-model="startReadingInput"
+                    placeholderValue="4020"
+                    text="Bitte den Zählerstand bei Turnusbeginn hinterlegen"
+                     unittext="kWh"
+                     step-value="1"
+                    />            
             
     <ion-text color="danger">Bitte gib alle Beträge als Bruttopreise an. Die gesetzliche Mehrwertsteuer ist somit in den Berechnungen bereits enthalten.</ion-text>
 

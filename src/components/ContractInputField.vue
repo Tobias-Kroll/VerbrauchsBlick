@@ -9,15 +9,17 @@ defineProps<{
     title: string,
     text: string
     placeholderValue?: string 
+    unittext: string,
+    stepValue?: string,
 }>()
 
 const isEditing = ref(!model.value);
 
-watch(model, (newValue) => {
+/*watch(model, (newValue) => {
   if (newValue !== undefined) {
     isEditing.value = false;
   }
-}, { immediate: true });
+}, { immediate: true });*/
 
 </script>
 
@@ -39,13 +41,12 @@ watch(model, (newValue) => {
                     :placeholder="placeholderValue"
                     enterkeyhint="done"
                     type="number"
+                    :step="stepValue || 'any'"
                     :readonly ="!isEditing"
                     @ion-blur="isEditing = false"
-                    @keyup.enter="isEditing = false"
-                    
-                    
-                />
-                <div slot="end" class="currency-unit">€</div>
+                    @ionChange="isEditing = false"
+                   />
+                <div slot="end" class="currency-unit">{{ unittext }}</div>
                 <ion-button @click="isEditing = !isEditing" fill="clear" color="primary" slot="end">
                     <ion-icon :icon="pencilSharp" />
                 </ion-button>
