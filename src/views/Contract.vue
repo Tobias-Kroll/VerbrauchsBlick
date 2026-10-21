@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { IonPage, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonToast} from '@ionic/vue';
+import { IonPage, IonCard, IonCardContent, IonCardHeader, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonToast, IonDatetime } from '@ionic/vue';
 import ContractInputField from '../components/ContractInputField.vue'
 import PrimaryButton from '../components/buttons/PrimaryButton.vue'
 import { ref, computed, onMounted } from 'vue';
 import type { IAppData } from '../models/IAppData.ts';
+import { informationCircle } from 'ionicons/icons';
 import { star } from 'ionicons/icons';
 
 const basePrice = ref<number>();
@@ -13,6 +14,7 @@ const isToastOpen = ref(false);
 const toastText = ref('');
 const savedContractData = ref<IAppData>();
 const startReadingInput = ref<number>();
+const startDateInput = ref<string>();
 
 
 const setIsToastOpen = (state: boolean) => {
@@ -72,6 +74,7 @@ onMounted (() => {
     pricePerkWh.value = lastPeriod.value?.grossConsumptionPrice;
     startReadingInput.value = lastPeriod.value?.startReading;
     monthlyInstallment.value = lastAdvancePayment.value?.grossAmount;
+    startDateInput.value = lastPeriod.value?.startDate;
     
   }
 
@@ -80,16 +83,22 @@ onMounted (() => {
     pricePerkWh.value = undefined;
     startReadingInput.value = undefined;
     monthlyInstallment.value = undefined;
+    startDateInput.value = undefined;
   }
+
 });
 
 function saveContractData(){
+
+  let endDateString = '';
+  let startDateString = '';
 
  // 1. Prüfung: Ist ein Feld WIRKLICH leer? (0 zählt hier NICHT als leer)
   if (
     basePrice.value === undefined || 
     pricePerkWh.value === undefined || 
-    monthlyInstallment.value === undefined
+    monthlyInstallment.value === undefined ||
+    !startDateInput.value
   ) {
     toastText.value = "Bitte fülle alle Felder aus, bevor du die Änderungen speicherst.";
     setIsToastOpen(true);
@@ -101,6 +110,34 @@ function saveContractData(){
     toastText.value = "Bitte gib nur Zahlen größer als 0 ein.";
     setIsToastOpen(true);
     return;
+  }
+
+  // 3. Prüfung: Liegt das Start-Datum in der Zukunft?
+  if (startDateInput.value) {
+    // Schneide die Uhrzeit ab, damit nur "YYYY-MM-DD" übrig bleibt
+    const selectedDateOnly = startDateInput.value.split('T')[0];
+    const today = new Date().toISOString().split('T')[0];
+
+    if (selectedDateOnly > today) {
+      toastText.value = "Das Start-Datum darf nicht in der Zukunft liegen.";
+      setIsToastOpen(true);
+      return;
+    }
+    else {
+    // 1. Aus dem Start-Datum ein echtes Date-Objekt machen
+    const startDate = new Date(startDateInput.value);
+
+    // 2. Genau 1 Jahr aufaddieren
+    const endDate = new Date(startDate);
+    endDate.setFullYear(endDate.getFullYear() + 1);
+    endDate.setDate(endDate.getDate() - 1); // Typisch bei Verträgen: 1 Jahr minus 1 Tag
+
+    // 3. Wieder als sauberen ISO-String (oder nur den Datumsteil) für die Speicherung umwandeln
+    endDateString = endDate.toISOString().split('T')[0];
+    startDateString = startDate.toISOString().split('T')[0];
+
+    console.log("Berechnetes Enddatum:", endDateString);
+  }
   }
 // wenn alles passt -> speichern.
 // zu speichern: 
@@ -119,6 +156,8 @@ savedContractData.value = {
       grossBasePrice: Number(basePrice.value),
       grossConsumptionPrice: Number(pricePerkWh.value),
       startReading: Number(startReadingInput.value),
+      startDate: startDateString,
+      endDate: endDateString
     },
   ],
   advancePayment:[
@@ -184,7 +223,7 @@ console.log("Gespeichert:", savedContractData.value);
                     text="Bitte den monatlichen Abschlag hinterlegen"
                     unittext="€"
                     /> 
-
+      
         <ContractInputField 
                     title="Zählerstand bei Turnusbeginn"
                     v-model="startReadingInput"
@@ -193,6 +232,29 @@ console.log("Gespeichert:", savedContractData.value);
                      unittext="kWh"
                      step-value="1"
                     />            
+        
+        <ion-card>
+          
+          <ion-card-header>
+            <ion-card-title>Turnusbeginn </ion-card-title>
+          </ion-card-header>
+          
+          <ion-card-content class="content" >
+            <ion-item lines="none" class="item">      
+              <ion-datetime-button class="date-button" datetime = "datetime" 
+                :class="{ 'has-date': startDateInput, 'empty-date': !startDateInput }">
+              </ion-datetime-button>       
+              <ion-icon class="icon" slot="end" :icon="informationCircle"></ion-icon>
+            
+            </ion-item>
+            <p class="text" v-show="!startDateInput || startDateInput === '0'">Bitte den Turnusbeginn hinterlegen</p>
+            <ion-modal :keep-contents-mounted = "true">
+              <IonDatetime id="datetime" v-model="startDateInput" presentation="date" size="cover"></IonDatetime>
+            </ion-modal>
+          </ion-card-content>
+
+        </ion-card>  
+      
             
     <ion-text color="danger">Bitte gib alle Beträge als Bruttopreise an. Die gesetzliche Mehrwertsteuer ist somit in den Berechnungen bereits enthalten.</ion-text>
 
@@ -213,4 +275,25 @@ console.log("Gespeichert:", savedContractData.value);
   .activePossible {
     --background: #f0f0f0;
   }
+
+.content {
+  margin: -8px;
+}
+
+.icon {
+  margin: 16px;
+}
+
+.text {
+  margin: 8px
+}
+
+/* Falls du über eine Klasse den Platzhalter steuern willst: */
+.empty-date::part(native) {
+  color: #92949c; /* Das Ausgegraute */
+}
+
+.has-date::part(native) {
+  color: #000000; /* Das Schwarz wenn gewählt */
+}
 </style>
