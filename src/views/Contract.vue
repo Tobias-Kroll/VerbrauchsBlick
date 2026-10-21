@@ -4,7 +4,7 @@ import ContractInputField from '../components/ContractInputField.vue'
 import PrimaryButton from '../components/buttons/PrimaryButton.vue'
 import { ref, computed, onMounted } from 'vue';
 import type { IAppData } from '../models/IAppData.ts';
-import { star } from 'ionicons/icons';
+
 
 const basePrice = ref<number>();
 const pricePerkWh = ref<number>();
@@ -118,7 +118,7 @@ savedContractData.value = {
     {
       grossBasePrice: Number(basePrice.value),
       grossConsumptionPrice: Number(pricePerkWh.value),
-      startReading: Number(startReadingInput.value),
+      startReading: Math.round(Number(startReadingInput.value)) || 0,
     },
   ],
   advancePayment:[
@@ -191,7 +191,6 @@ console.log("Gespeichert:", savedContractData.value);
                     placeholderValue="4020"
                     text="Bitte den Zählerstand bei Turnusbeginn hinterlegen"
                      unittext="kWh"
-                     step-value="1"
                     />            
             
     <ion-text color="danger">Bitte gib alle Beträge als Bruttopreise an. Die gesetzliche Mehrwertsteuer ist somit in den Berechnungen bereits enthalten.</ion-text>

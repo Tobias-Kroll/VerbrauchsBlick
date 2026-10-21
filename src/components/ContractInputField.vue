@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { IonCard, IonCardHeader, IonCardTitle, IonItem, IonIcon, IonInput, IonButton } from '@ionic/vue'
 import { pencilSharp, helpCircleOutline } from 'ionicons/icons'
-import { ref, watch} from 'vue'
+import { ref} from 'vue'
 
 const model = defineModel<number>(); 
 
