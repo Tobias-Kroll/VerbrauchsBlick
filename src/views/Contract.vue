@@ -30,7 +30,8 @@ const isFormValid = computed(() => {
   );
 });
 
-//last Period = Ziel ist es das letzte Objekt von billing Period in einer Variable zu speichern.
+//last Period = Ziel ist es das letzte Objekt von billing Period in einer Variable zu speichern
+// zukunftssicher für mehrere Perioden zu machen (MVP-Workaround). Da theoretisch noch nicht nötig 
 const lastPeriod = computed(() => {
   const periods = savedContractData.value?.billingPeriod; // holt Billingperiods
   return periods && periods.length > 0 ? periods[periods.length - 1] : undefined; 
@@ -155,13 +156,12 @@ savedContractData.value = {
     {
       grossBasePrice: Number(basePrice.value),
       grossConsumptionPrice: Number(pricePerkWh.value),
-      startReading: Number(startReadingInput.value),
+      startReading: Math.round(Number(startReadingInput.value)) || 0,
       startDate: startDateString,
       endDate: endDateString
     },
   ],
-  advancePayment:[
-    {
+  advancePayment:[{
     grossAmount : Number(monthlyInstallment.value),
     },  
   ],
@@ -230,7 +230,6 @@ console.log("Gespeichert:", savedContractData.value);
                     placeholderValue="4020"
                     text="Bitte den Zählerstand bei Turnusbeginn hinterlegen"
                      unittext="kWh"
-                     step-value="1"
                     />            
         
         <ion-card>
