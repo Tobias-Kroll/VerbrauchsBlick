@@ -1,19 +1,57 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle } from '@ionic/vue';
 import { pencilSharp, informationCircle } from 'ionicons/icons'
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
+import type { IAppData } from '../models/IAppData';
 
 const readingInput = ref<number>();
+const readingValueOutput =ref<number>(); //lertzter Zählstand
+const readingDateOutput =ref<string>(); //letztes erfasstes Datum 
 
+//Speicher variable
+const homeSavedData = ref<IAppData>();
 
+//lastReading -> 
+const lastReading = computed (() => {
+    const readings = homeSavedData.value?.meterReading;
+    return readings && readings.length > 0 ? readings[readings.length-1] : undefined;
+});
+//startReading ->
+const startReading = computed (() => {
+    const starts = homeSavedData.value?.billingPeriod;
+    return starts && starts.length > 0 ? starts[starts.length-1] : undefined;
+
+});
+    
+//Beim Seite laden:
+onMounted(() => {
+  const storedData = localStorage.getItem('AppData');
+
+  if(storedData) {
+    const parsedData = JSON.parse(storedData) ; // JSON.parse wandelt einen JSON-String in ein JavaScript-Objekt um
+
+    homeSavedData.value = parsedData; 
+
+    if(lastReading.value?.readingValue && lastReading.value?.readingDate){
+        readingValueOutput.value = lastReading.value?.readingValue;
+        readingDateOutput.value = lastReading.value?.readingDate;
+    }
+    else {
+        readingValueOutput.value = startReading.value?.startReading;
+        readingDateOutput.value = startReading.value?.startDate;
+
+    }
+  }
+  else{
+    readingValueOutput.value = undefined;
+    readingDateOutput.value = undefined;
+  }
+});
 
 //------Vallidierung:--------
 
 const disabled = computed (() => {
-    return( false
-
-
-    );
+    return(false);
 })
 
 </script>
@@ -41,7 +79,8 @@ const disabled = computed (() => {
             <ion-card color="primary" class="ion-text-center">
                 <!--Header: letzter Zählerstand-->
                 <ion-card-header class = "lastreading">
-                    letzter Zählerstand
+                  <ion-text>{{ readingValueOutput }} </ion-text>
+                  <ion-text>{{ readingDateOutput }}</ion-text>
             </ion-card-header>
 
             <ion-card-content>

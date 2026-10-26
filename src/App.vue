@@ -7,7 +7,7 @@ import Home from './views/Home.vue';
 <template>
   <ion-app>
     
-      <Contract />
+      <home />
     
   </ion-app>
 </template>
