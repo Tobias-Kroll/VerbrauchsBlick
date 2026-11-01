@@ -109,7 +109,26 @@ readingInput.value = undefined;
 };
 
 function deleteLastReading () {
+    if (homeSavedData.value.meterReading.length === 0){
+        console.log("kein Löschen möglich");
+        toastText.value="du kannst deinen start Zählerstand nicht löschen, sondern nur in der Vertragsseite ändern";
+        isToastOpen.value =true;
+        return;
+    }
     
+    homeSavedData.value.meterReading.pop();
+    localStorage.setItem('AppData', JSON.stringify(homeSavedData.value));
+    console.log("Eintrag gelöscht. Verbleibend:", homeSavedData.value.meterReading);    
+
+    if (homeSavedData.value.meterReading.length > 0) {
+        // Es gibt noch weitere Einträge -> Zeige den neuen letzten Wert an
+        readingValueOutput.value = lastReading.value?.readingValue;
+        readingDateOutput.value = lastReading.value?.readingDate;
+    } else {
+        // Array ist jetzt leer -> Fallback auf den Start-Zählerstand
+        readingValueOutput.value = startReading.value?.startReading;
+        readingDateOutput.value = startReading.value?.startDate;
+    }
 };
 
 //------Vallidierung:--------
@@ -159,7 +178,7 @@ function deleteLastReading () {
                                 <ion-text class ="ion-text-start" style="margin-inline-start: 16px;">{{ readingValueOutput }} kwH  am {{ formatDateGerman(readingDateOutput) }} </ion-text>
                             </ion-col>
                             <ion-col size="3" class="ion-text-left">
-                                <ion-button color="warning" fill="solid" size="small" class="ion-no-padding">
+                                <ion-button @click="deleteLastReading" color="warning" fill="solid" size="small" class="ion-no-padding">
                                     <ion-icon style="transform: translateX(15%);" size="small" :icon="trashOutline"></ion-icon>  
                                 </ion-button>
                             </ion-col>
