@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle } from '@ionic/vue';
-import { pencilSharp, informationCircle } from 'ionicons/icons'
+import { trashOutline, informationCircle } from 'ionicons/icons'
 import { computed, ref, onMounted } from 'vue';
 import type { IAppData } from '../models/IAppData';
 
@@ -48,6 +48,19 @@ onMounted(() => {
   }
 });
 
+const formatDateGerman = (readingDateOutput? :string) => {
+    if(!readingDateOutput){
+        return('');
+    }
+    else {
+        return new Date(readingDateOutput).toLocaleDateString('de-DE');
+    }
+};
+
+function deleteLastReading () {
+    
+};
+
 //------Vallidierung:--------
 
 const disabled = computed (() => {
@@ -78,9 +91,24 @@ const disabled = computed (() => {
         <!--Meterreadings-->
             <ion-card color="primary" class="ion-text-center">
                 <!--Header: letzter Zählerstand-->
-                <ion-card-header class = "lastreading">
-                  <ion-text>{{ readingValueOutput }} </ion-text>
-                  <ion-text>{{ readingDateOutput }}</ion-text>
+                <ion-card-header class = "lastreading">       
+                    <ion-grid class="ion-no-padding ion-no-margin">          
+                       <ion-row style="margin-bottom: 12px">
+                            <ion-col >
+                            <ion-text>Letzter Zählerstand</ion-text>  
+                            </ion-col>
+                       </ion-row>
+                       <ion-row class="ion-align-items-center">  
+                            <ion-col size="9">
+                                <ion-text class ="ion-text-start" style="margin-inline-start: 16px;">{{ readingValueOutput }} kwH  am {{ formatDateGerman(readingDateOutput) }} </ion-text>
+                            </ion-col>
+                            <ion-col size="3" class="ion-text-left">
+                                <ion-button color="warning" fill="solid" size="small" class="ion-no-padding">
+                                    <ion-icon style="transform: translateX(15%);" size="small" :icon="trashOutline"></ion-icon>  
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                  </ion-grid>
             </ion-card-header>
 
             <ion-card-content>
