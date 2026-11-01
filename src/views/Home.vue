@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonInput, IonToast } from '@ionic/vue';
 import { trashOutline, informationCircle } from 'ionicons/icons'
 import { computed, ref, onMounted } from 'vue';
 import type { IAppData } from '../models/IAppData';
@@ -9,7 +9,20 @@ const readingValueOutput =ref<number>(); //lertzter Zählstand
 const readingDateOutput =ref<string>(); //letztes erfasstes Datum 
 
 //Speicher variable
-const homeSavedData = ref<IAppData>();
+    const homeSavedData = ref<IAppData>({
+    advancePayment: [],
+    billingPeriod: [],
+    meterReading: []
+});
+
+//Toast
+const toastText = ref('');
+const isToastOpen = ref(false);
+
+const setIsToastOpen = (state: boolean) => {
+    isToastOpen.value = state;
+};
+
 
 //lastReading -> 
 const lastReading = computed (() => {
@@ -57,15 +70,51 @@ const formatDateGerman = (readingDateOutput? :string) => {
     }
 };
 
+function saveNewReading(){
+    console.log("Aktueller Input-Wert:", readingInput.value);
+
+    // 1. Prüfen, ob das Feld komplett leer ist (fängt undefined, null und "" ab)
+    if (!readingInput.value) {
+        console.log("Fehler: Feld ist leer!");
+        toastText.value = "Trage einen Zählerstand ein";
+        isToastOpen.value = true; // Direkt auf true setzen reicht völlig aus!
+        return;
+    }
+    
+    // 2. Prüfen, ob der Wert kleiner oder gleich dem letzten Stand ist
+
+    if (readingInput.value <= (readingValueOutput.value ?? 0) || readingInput.value <= (startReading.value?.startReading ?? 0)) {
+        console.log("Fehler: Wert zu niedrig!");
+        toastText.value = "Dein neuer Zählerstand kann nicht gleich oder kleiner deines letzten erfassten Zählerstandes sein";
+        isToastOpen.value = true;
+        return;
+    }
+    
+    homeSavedData.value.meterReading.push({
+    readingValue: Number(readingInput.value),
+    readingDate: new Date().toISOString().split('T')[0],
+})
+
+
+console.log(homeSavedData.value.meterReading);
+
+localStorage.setItem('AppData', JSON.stringify(homeSavedData.value));
+console.log("Gespeichert:", homeSavedData.value);
+
+readingValueOutput.value = Number(readingInput.value);
+readingDateOutput.value = new Date().toISOString().split('T')[0];
+readingInput.value = undefined;
+
+
+};
+
 function deleteLastReading () {
     
 };
 
 //------Vallidierung:--------
 
-const disabled = computed (() => {
-    return(false);
-})
+
 
 </script>
 
@@ -80,6 +129,13 @@ const disabled = computed (() => {
         </ion-header>
 
         <ion-content>
+            <ion-toast
+                :is-open="isToastOpen"
+                :message="toastText"
+                :duration="3500"
+                @didDismiss="setIsToastOpen(false)"
+                position="bottom" 
+                color="danger"></ion-toast>
         <!--Hauptfeature-->
             <ion-card color="medium">
                 <ion-card-header> Hauptfeature </ion-card-header>
@@ -128,7 +184,8 @@ const disabled = computed (() => {
                             </ion-input>
                         
                     </ion-item>
-                    <ion-button expand="block" size="default" class="custom-button" :disabled="true"  color="light">
+                    <ion-button @click="saveNewReading"
+                    expand="block" size="default" class="custom-button" color="light">
                                 Stand jetzt speichern
                     </ion-button>
             </ion-card-content>
