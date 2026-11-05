@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { IonApp} from '@ionic/vue'
-import Contract from './views/Contract.vue'
-import Home from './views/Home.vue';
+import { IonApp, IonRouterOutlet } from '@ionic/vue';
 </script>
 
 <template>
   <ion-app>
-    
-      <home />
-    
+    <ion-router-outlet />
   </ion-app>
 </template>

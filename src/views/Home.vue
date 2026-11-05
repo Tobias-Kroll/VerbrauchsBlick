@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonInput, IonToast } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonInput, IonToast, IonContent, IonItem, IonLabel } from '@ionic/vue';
 import { trashOutline, informationCircle } from 'ionicons/icons'
 import { computed, ref, onMounted } from 'vue';
 import type { IAppData } from '../models/IAppData';
+
+
 
 const readingInput = ref<number>();
 const readingValueOutput =ref<number>(); //lertzter Zählstand
@@ -213,9 +215,7 @@ function deleteLastReading () {
 
         </ion-content>
 
-        <ion-footer>
 
-        </ion-footer>
 
     </IonPage>
 </template>
