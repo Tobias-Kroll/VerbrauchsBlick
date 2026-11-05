@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import router from './router/index.ts'
 import App from './App.vue'
 import { IonicVue } from '@ionic/vue'
 
@@ -14,6 +15,8 @@ import '@ionic/vue/css/text-transformation.css'
 import '@ionic/vue/css/flex-utils.css'
 import '@ionic/vue/css/display.css'
 
+
 createApp(App)
   .use(IonicVue)
+  .use(router)
   .mount('#app')
