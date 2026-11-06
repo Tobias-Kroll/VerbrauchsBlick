@@ -9,6 +9,7 @@ import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 
 
+
 const modal =ref();
 const isDeleteEnabled = ref(false);
 
@@ -24,11 +25,13 @@ const router = useRouter();
 
 const deleteAll = () => {
   // 1. Aus dem LocalStorage löschen
+  console.log("hier an");
 localStorage.clear();
   // 3. Modal schließen
   modal.value.$el.dismiss(null, 'confirm');
   // 4. Saubere Weiterleitung zur Home-Seite via Router (ohne echten Browser-Reload!)
   router.push('/tabs/home');
+  window.location.reload();
 };
 </script>
 

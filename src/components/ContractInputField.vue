@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { IonCard, IonCardHeader, IonCardTitle, IonItem, IonIcon, IonInput, IonButton } from '@ionic/vue'
 import { pencilSharp, helpCircleOutline } from 'ionicons/icons'
-import { ref} from 'vue'
+import { ref, watch} from 'vue'
 
 const model = defineModel<number>(); 
 
@@ -14,12 +14,20 @@ defineProps<{
 }>()
 
 const isEditing = ref(!model.value);
+const isInitialized = ref(false); // Merker, ob der Start-Check schon durch ist
 
-/*watch(model, (newValue) => {
-  if (newValue !== undefined) {
-    isEditing.value = false;
+// Der Watcher läuft exakt einmal beim Laden durch und ignoriert danach jede Benutzereingabe beim Tippen!
+watch(model, (newValue) => {
+  if (!isInitialized.value) {
+    if (newValue !== undefined && newValue !== null && newValue !== 0) {
+      isEditing.value = false; // Daten vorhanden -> Feld beim Start gesperrt
+      isInitialized.value = true;
+    } else {
+      isEditing.value = true;  // Keine Daten -> Feld beim Start offen zum Tippen
+      isInitialized.value = true;
+    }
   }
-}, { immediate: true });*/
+}, { immediate: true });
 
 </script>
 
@@ -36,6 +44,7 @@ const isEditing = ref(!model.value);
         <ion-item lines="none">
             
                 <ion-input class="input-field"
+                fill="outline"
                     :class="{ 'active-editing': isEditing }"
                     v-model="model" 
                     :placeholder="placeholderValue"
@@ -68,12 +77,20 @@ const isEditing = ref(!model.value);
 
 <style scoped>
 
+.input-field[readonly]{
+    --background :#f8f9fa;
+    padding: 0;
+    pointer-events: none;
+}
+
 .input-field.active-editing {
   --background: #f0f0f0; 
-  border-radius: 8px;    
+  --border-width: 2px; 
+  --border-color:#3880ff;
+  box-shadow: 0 0 0 2px rgba(56, 128, 255, 0.1);
 }
 .editing {
-    --background: #f0f0f0;
+    --background: #694c4c;
     margin-left: 0%;
 }
 </style>
