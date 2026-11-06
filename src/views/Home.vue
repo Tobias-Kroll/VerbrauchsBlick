@@ -83,7 +83,16 @@ function saveNewReading(){
         return;
     }
     
-    // 2. Prüfen, ob der Wert kleiner oder gleich dem letzten Stand ist
+
+    if(!startReading.value){
+        console.log("Noch kein Startzähler eingetragen");
+        toastText.value ="Bitte hinterlege zu erst deinen Startzählerstand";
+        isToastOpen.value= true;
+        readingInput.value = 0;
+        return;
+    }    
+
+    // 3. Prüfen, ob der Wert kleiner oder gleich dem letzten Stand ist
 
     if (readingInput.value <= (readingValueOutput.value ?? 0) || readingInput.value <= (startReading.value?.startReading ?? 0)) {
         console.log("Fehler: Wert zu niedrig!");
@@ -91,6 +100,7 @@ function saveNewReading(){
         isToastOpen.value = true;
         return;
     }
+
     
     homeSavedData.value.meterReading.push({
     readingValue: Number(readingInput.value),
@@ -177,7 +187,10 @@ function deleteLastReading () {
                        </ion-row>
                        <ion-row class="ion-align-items-center">  
                             <ion-col size="9">
-                                <ion-text class ="ion-text-start" style="margin-inline-start: 16px;">{{ readingValueOutput }} kwH  am {{ formatDateGerman(readingDateOutput) }} </ion-text>
+                                <ion-text v-if="readingValueOutput" class ="ion-text-start" style="margin-inline-start: 16px;">
+                                    {{ readingValueOutput }} kwH  am {{ formatDateGerman(readingDateOutput) }} 
+                                </ion-text>
+                                <ion-text v-else class ="ion-text-end" style="margin-inline-start: 4px;">Noch kein Zählerstand eingetragen</ion-text>
                             </ion-col>
                             <ion-col size="3" class="ion-text-left">
                                 <ion-button @click="deleteLastReading" color="warning" fill="solid" size="small" class="ion-no-padding">

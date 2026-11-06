@@ -30,6 +30,17 @@ const isFormValid = computed(() => {
   );
 });
 
+// isDirty = Ziel : sind die vom Nutzer eingebenen Werte gleich der letzen eingetragenen Werte ?
+const isDirty = computed(() => {
+  return (
+    Number(basePrice.value) !== Number(lastPeriod.value?.grossBasePrice) ||
+    Number(pricePerkWh.value) !== Number(lastPeriod.value?.grossConsumptionPrice) || 
+    Number(monthlyInstallment.value) !== Number(lastAdvancePayment.value?.grossAmount) ||
+    Number(startReadingInput.value) !== Number(lastPeriod.value?.startReading) ||
+    (startDateInput.value ? startDateInput.value.split('T')[0] : '') !== (lastPeriod.value?.startDate ? lastPeriod.value.startDate.split('T')[0] : '')
+  );
+});
+
 //last Period = Ziel ist es das letzte Objekt von billing Period in einer Variable zu speichern
 // zukunftssicher für mehrere Perioden zu machen (MVP-Workaround). Da theoretisch noch nicht nötig 
 const lastPeriod = computed(() => {
@@ -45,17 +56,6 @@ const lastAdvancePayment = computed(() => {
   const payments = savedContractData.value?.advancePayment; 
   return payments && payments.length > 0 ? payments[payments.length -1] : undefined;
 });
-
-
-// isDirty = Ziel : sind die vom Nutzer eingebenen Werte gleich der letzen eingetragenen Werte ?
-const isDirty = computed(() => {
-  return (
-    basePrice.value !== lastPeriod.value?.grossBasePrice ||
-    pricePerkWh.value !== lastPeriod.value?.grossConsumptionPrice || 
-    monthlyInstallment.value !== lastAdvancePayment.value?.grossAmount
-  );
-});
-
 
 //canSave = Ziel: wenn isFormValid & isDirty erfüllt dann kann der Nutzer seine Werte speichern 
 const canSave = computed(() => isFormValid.value && isDirty.value);
@@ -84,6 +84,7 @@ onMounted (() => {
     pricePerkWh.value = undefined;
     startReadingInput.value = undefined;
     monthlyInstallment.value = undefined;
+    startReadingInput.value = undefined;
     startDateInput.value = undefined;
   }
 
@@ -171,6 +172,7 @@ savedContractData.value = {
 
 localStorage.setItem('AppData', JSON.stringify(savedContractData.value));
 console.log("Gespeichert:", savedContractData.value);
+
 }
 
 </script>
@@ -263,6 +265,7 @@ console.log("Gespeichert:", savedContractData.value);
     <ion-toolbar class="ion-text-center">
       <PrimaryButton @click="saveContractData"
         :color=" !canSave ? 'medium' : 'primary'"
+        :disabled="!canSave"
         text = "Änderungen speichern"
       />
     </ion-toolbar>  
