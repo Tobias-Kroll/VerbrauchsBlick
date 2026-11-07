@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IonPage, IonCard, IonCardContent, IonCardHeader, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonToast, IonDatetime } from '@ionic/vue';
+import { IonPage, IonCard, IonCardContent, IonCardHeader, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonToast, IonDatetime, IonAlert } from '@ionic/vue';
 import ContractInputField from '../components/ContractInputField.vue'
 import PrimaryButton from '../components/buttons/PrimaryButton.vue'
 import { ref, computed, onMounted } from 'vue';
@@ -16,6 +16,7 @@ const savedContractData = ref<IAppData>();
 const startReadingInput = ref<number>();
 const startDateInput = ref<string>();
 
+const alertButtons = ['Verstanden'];
 
 const setIsToastOpen = (state: boolean) => {
   isToastOpen.value = state;
@@ -207,6 +208,12 @@ console.log("Gespeichert:", savedContractData.value);
                     placeholderValue="8"
                     text="Bitte Grundpreis hinterlegen"
                     unittext="€"
+                    info-title="Grundpreis (monatlich)"
+                    info-text="Der Grundpreis ist ein fester Monatsbetrag, der unabhängig von deinem Verbrauch anfällt. Zusammen mit den Verbrauchskosten ergibt er deine Gesamtrechnung.
+
+                    Du findest ihn in der Regel in deiner Jahresabrechnung, im Vertrag oder im Kundenportal. 
+
+                    Hinweis: Steht dort nur ein Jahresbetrag? Teile diesen einfach durch 12, um den monatlichen Wert zu erhalten."
                     /> 
 
         <ContractInputField 
@@ -214,8 +221,14 @@ console.log("Gespeichert:", savedContractData.value);
                     v-model="pricePerkWh"
                     placeholderValue="0.34"
                     text="Bitte den Preis pro kWh hinterlegen"
-                    unittext="€"
+                    unittext="ct"
                     step-value="0.01"
+                    info-title="Preis pro kWh"
+                    info-text="Der Preis pro kWh (auch Arbeitspreis genannt) ist der Betrag, den du für jede tatsächlich verbrauchte Kilowattstunde Strom bezahlst. 
+
+Du findest ihn in der Regel auf deiner Jahresabrechnung bei der Verbrauchsaufstellung oder in deiner Vertragsbestätigung (angegeben z. B. in „ct/kWh“ oder „€/kWh“).
+
+Hinweis: Preisangabe in Cent"
                     /> 
         
         <ContractInputField 
@@ -224,6 +237,12 @@ console.log("Gespeichert:", savedContractData.value);
                     placeholderValue="40"
                     text="Bitte den monatlichen Abschlag hinterlegen"
                     unittext="€"
+                    info-title="Monatlicher Abschlag"
+                    info-text="Der monatliche Abschlag ist die Vorauszahlung, die du jeden Monat an deinen Energieversorger leistest. Am Ende des Abrechnungsjahres wird dein tatsächlicher Verbrauch mit diesen Zahlungen verrechnet.
+
+Du findest ihn in der Regel auf deiner Jahresabrechnung im Abschnitt zu den Abschlägen oder in deinem Online-Kundenportal.
+
+Trag hier einfach den monatlichen Betrag in Euro ein, den du aktuell an deinen Anbieter zahlst (z. B. 56,00€)."
                     /> 
       
         <ContractInputField 
@@ -232,6 +251,12 @@ console.log("Gespeichert:", savedContractData.value);
                     placeholderValue="4020"
                     text="Bitte den Zählerstand bei Turnusbeginn hinterlegen"
                      unittext="kWh"
+                     info-title="Zählerstand bei Turnusbeginn"
+                     info-text="Der Zählerstand bei Turnusbeginn bezeichnet den Stand deines Stromzählers zu Beginn des neuen Abrechnungszeitraums (des sogenannten Turnus).
+
+Du findest ihn in der Regel auf deiner letzten Jahresabrechnung oder im Online-Kundenportal.
+
+Hinweis: Dieser Startzählerstand ist im Regelfall exakt der Endzählerstand aus deinem letzten Abrechnungsjahr."
                     />            
         
         <ion-card>
@@ -245,7 +270,19 @@ console.log("Gespeichert:", savedContractData.value);
               <ion-datetime-button class="date-button" datetime = "datetime" 
                 :class="{ 'has-date': startDateInput, 'empty-date': !startDateInput }">
               </ion-datetime-button>       
-              <ion-icon class="icon" slot="end" :icon="informationCircle"></ion-icon>
+              <ion-button class="ion-no-padding" id="present-alert">
+                <ion-icon class="icon ion-no-margin" slot="end" :icon="informationCircle"></ion-icon>
+              </ion-button> 
+              <ion-alert
+                trigger="present-alert"
+                header="Turnusbeginn"
+                message=" Der Turnusbeginn ist das Startdatum deines aktuellen Abrechnungszeitraums – also der Tag, ab dem dein neues Abrechnungsjahr läuft (in der Regel genau ein Jahr minus ein Tag).
+
+Du findest dieses Datum meist auf deiner letzten Jahresabrechnung unter „Abrechnungszeitraum“ oder in deinem Vertrag.
+
+Hinweis: Das ist meist der Tag direkt nach dem Ende deines vorherigen Abrechnungszeitraums. Lief dein letztes Abrechnungsjahr beispielsweise vom 12.07.2025 bis 11.07.2026, beginnt dein neuer Turnus am 12.07.2026 und endet am 11.07.2027."
+                :buttons="alertButtons"
+              ></ion-alert>
             
             </ion-item>
             <p class="text" v-show="!startDateInput || startDateInput === '0'">Bitte den Turnusbeginn hinterlegen</p>
@@ -278,6 +315,7 @@ console.log("Gespeichert:", savedContractData.value);
     --background: #f0f0f0;
   }
 
+
 .content {
   margin: -8px;
 }
@@ -298,4 +336,10 @@ console.log("Gespeichert:", savedContractData.value);
 .has-date::part(native) {
   color: #000000; /* Das Schwarz wenn gewählt */
 }
+
+ion-alert {
+  --height: auto;
+  white-space: pre-line;
+}
+
 </style>

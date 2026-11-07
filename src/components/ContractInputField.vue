@@ -1,17 +1,25 @@
 <script setup lang="ts">
-import { IonCard, IonCardHeader, IonCardTitle, IonItem, IonIcon, IonInput, IonButton } from '@ionic/vue'
+import { IonCard, IonCardHeader, IonCardTitle, IonItem, IonIcon, IonInput, IonButton, IonAlert } from '@ionic/vue'
 import { pencilSharp, helpCircleOutline } from 'ionicons/icons'
 import { ref, watch} from 'vue'
 
 const model = defineModel<number>(); 
-
+const isOpen = ref(false);
+ const alertButtons = ['Verstanden'];
 defineProps<{
     title: string,
     text: string
     placeholderValue?: string 
     unittext: string,
     stepValue?: string,
+    infoTitle?: string,
+    infoText?: string,
+    infoText2?: string
 }>()
+
+  const setOpenInfoField = (state: boolean) => {
+    isOpen.value = state;
+  };
 
 const isEditing = ref(!model.value);
 const isInitialized = ref(false); // Merker, ob der Start-Check schon durch ist
@@ -60,9 +68,17 @@ watch(model, (newValue) => {
                     <ion-icon :icon="pencilSharp" />
                 </ion-button>
             
-                <ion-button fill="clear" slot="end">
+                <ion-button fill="clear" slot="end" @click="setOpenInfoField(true)">
                     <ion-icon :icon="helpCircleOutline" />
                 </ion-button>
+                <ion-alert
+                  :is-open="isOpen"
+                  :header="infoTitle"        
+                  :message="infoText"
+                  :message2="infoText2"       
+                  :buttons="alertButtons"
+                  @didDismiss="setOpenInfoField(false)"
+                ></ion-alert>
                 
         </ion-item>
         <p v-show="!model || model === 0"  class="error-text">
@@ -92,6 +108,12 @@ watch(model, (newValue) => {
 .editing {
     --background: #694c4c;
     margin-left: 0%;
+}
+
+ion-alert {
+  --height: auto;
+  --min-height: 70%;
+  white-space: pre-line;
 }
 </style>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonInput, IonToast, IonContent, IonItem, IonLabel } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonInput, IonToast, IonContent, IonItem, IonLabel, IonAlert } from '@ionic/vue';
 import { trashOutline, informationCircle } from 'ionicons/icons'
 import { computed, ref, onMounted } from 'vue';
 import type { IAppData } from '../models/IAppData';
@@ -9,6 +9,7 @@ import type { IAppData } from '../models/IAppData';
 const readingInput = ref<number>();
 const readingValueOutput =ref<number>(); //lertzter Zählstand
 const readingDateOutput =ref<string>(); //letztes erfasstes Datum 
+const alertButtons = ['Verstanden'];
 
 //Speicher variable
     const homeSavedData = ref<IAppData>({
@@ -212,9 +213,20 @@ function deleteLastReading () {
                         placeholder="42XX kWh"
                         v-model="readingInput"
                         >
-                            <ion-button fill="clear" slot="end">
+                            <ion-button fill="clear" slot="end" id="present-alert">
                                 <ion-icon class="" :icon="informationCircle" slot="end"></ion-icon>
                             </ion-button>
+
+                            <ion-alert
+                trigger="present-alert"
+                header="Neuer Zählerstand"
+                message=" Der neue Zählerstand ist der aktuelle Stand, den dein Stromzähler im Moment anzeigt. Er wird mit deinem Startzählerstand verglichen, um deinen tatsächlichen Stromverbrauch zu berechnen.
+
+Du findest diesen Wert direkt an deinem physischen Stromzähler (meist auf dem digitalen Display oder dem Rollenzählwerk).
+
+Trag hier einfach den aktuellen Zählerstand in Kilowattstunden (kWh) ein, ohne Nachkommastellen."
+:buttons="alertButtons"
+></ion-alert>
                             </ion-input>
                         
                     </ion-item>
@@ -263,4 +275,10 @@ ion-icon {
     padding-right: 0.5rem;
     font-size: 1.5rem;
 }
+
+ion-alert {
+  --height: auto;
+  white-space: pre-line;
+}
+
 </style>
