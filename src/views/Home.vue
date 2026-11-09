@@ -6,6 +6,7 @@ import type { IAppData } from '../models/IAppData';
 
 
 
+
 const readingInput = ref<number>();
 const readingValueOutput =ref<number>(); //lertzter Zählstand
 const readingDateOutput =ref<string>(); //letztes erfasstes Datum 
@@ -52,11 +53,13 @@ onMounted(() => {
         readingValueOutput.value = lastReading.value?.readingValue;
         readingDateOutput.value = lastReading.value?.readingDate;
     }
-    else {
-        readingValueOutput.value = startReading.value?.startReading;
-        readingDateOutput.value = startReading.value?.startDate;
-
-    }
+else {
+    // Falls startReading nicht direkt greift, schauen wir direkt in parsedData nach dem Vertrag
+    const billingPeriod = parsedData?.billingPeriod?.[0];
+    
+    readingValueOutput.value = lastReading.value?.readingValue ?? billingPeriod?.startReading ?? 0;
+    readingDateOutput.value = lastReading.value?.readingDate ?? billingPeriod?.startDate ?? '';
+}
   }
   else{
     readingValueOutput.value = undefined;
@@ -152,15 +155,36 @@ function deleteLastReading () {
 
 <template> 
 
-    <IonPage>
+    <ion-page>
+        
+        <ion-header condence = "fade">
+                <ion-toolbar>
+                    <ion-title> Verbrauchsblick </ion-title>  
+                    <ion-button  fill="clear" size="default" id="present-home-alert" slot="end" class="ion-padding-right info-Button">
+                        <ion-icon size="default" :icon="informationCircle"></ion-icon>
+                    </ion-button>
+                        <ion-alert
+                            trigger="present-home-alert"
+                            css-class="home-about-alert"
+                            header="Über dieses Projekt"
+                            message= "Hallo liebe Verbrauchsblick-Freunde,
+                            diese App habe ich als Student als mein erstes kleines Herzensprojekt entwickelt.
 
-        <ion-header>
-                <ion-toolbar class="ion-text-center">
-                    <ion-title> Verbrauchsblick </ion-title>
-                </ion-toolbar>
+                            Die Idee entstand, als ich zum ersten Mal wissen wollte, ob ich beim Strom im Plus oder im Minus bin. Ich musste feststellen, dass ich alles mühsam auf Papier ausrechnen musste – und das auch erst, nachdem ich mich belesen hatte, wie die Abrechnung überhaupt funktioniert. Genau hier wollte ich Abhilfe schaffen!
+
+                            Aus zeittechnischen Gründen startet ihr hier erst einmal mit Version 1.0 (einem minimal funktionsfähigen Produkt). Ich habe aber schon viele Ideen für zukünftige Features, darunter zum Beispiel:
+
+                            - Dynamische Anpassung von monatlichen Abschlägen
+                            - Detaillierte Einblicke in euren Verbrauch (z. B. Diagramme und Prognosen)
+                            - Und vieles mehr!
+
+                            Ich hoffe sehr, dass euch die bisherige Version gefällt und euch im Alltag weiterhilft."
+                            :buttons="alertButtons"
+                        ></ion-alert>
+               </ion-toolbar>
         </ion-header>
 
-        <ion-content>
+        <ion-content class="ion-padding" >
             <ion-toast
                 :is-open="isToastOpen"
                 :message="toastText"
@@ -169,71 +193,67 @@ function deleteLastReading () {
                 position="bottom" 
                 color="danger"></ion-toast>
         <!--Hauptfeature-->
-            <ion-card color="medium">
+            <ion-card class="styleMainFeature">
                 <ion-card-header> Hauptfeature </ion-card-header>
                     
-                <ion-card-content>cooming soon...</ion-card-content>
+                <ion-card-content class="styleMainFeatureContent">cooming soon...</ion-card-content>
             </ion-card>
 
 
         <!--Meterreadings-->
-            <ion-card color="primary" class="ion-text-center">
+            <ion-card>
                 <!--Header: letzter Zählerstand-->
                 <ion-card-header class = "lastreading">       
-                    <ion-grid class="ion-no-padding ion-no-margin">          
-                       <ion-row style="margin-bottom: 12px">
-                            <ion-col >
+                           
                             <ion-text>Letzter Zählerstand</ion-text>  
-                            </ion-col>
-                       </ion-row>
-                       <ion-row class="ion-align-items-center">  
+
+                </ion-card-header>       
+
+            <ion-card-content>
+                <ion-grid class="styleReadingOutput ion-text-center">
+                <ion-row class="ion-align-items-center">  
                             <ion-col size="9">
-                                <ion-text v-if="readingValueOutput" class ="ion-text-start" style="margin-inline-start: 16px;">
-                                    {{ readingValueOutput }} kwH  am {{ formatDateGerman(readingDateOutput) }} 
+                                <ion-text v-if="readingValueOutput" class ="ion-text-start">
+                                    {{ readingValueOutput }} kWh &nbsp;&nbsp;&nbsp;am {{ formatDateGerman(readingDateOutput) }} 
                                 </ion-text>
                                 <ion-text v-else class ="ion-text-end" style="margin-inline-start: 4px;">Noch kein Zählerstand eingetragen</ion-text>
                             </ion-col>
                             <ion-col size="3" class="ion-text-left">
-                                <ion-button @click="deleteLastReading" color="warning" fill="solid" size="small" class="ion-no-padding">
-                                    <ion-icon style="transform: translateX(15%);" size="small" :icon="trashOutline"></ion-icon>  
+                                <ion-button @click="deleteLastReading" fill="clear" size="default" class="ion-no-padding delete-btn">
+                                    <ion-icon  size="default" :icon="trashOutline"></ion-icon>  
                                 </ion-button>
                             </ion-col>
                         </ion-row>
-                  </ion-grid>
-            </ion-card-header>
-
-            <ion-card-content>
+                    </ion-grid>
                 <!--Content: neuster Zählerstand-->
-                    <ion-item color="primary" class="custom-box">
-                        <ion-label position="stacked" class="ion-text-center">
-                            Neuer Zählerstand
-                        </ion-label>
-                        <ion-input 
-                        type="number" 
-                        placeholder="42XX kWh"
-                        v-model="readingInput"
-                        >
-                            <ion-button fill="clear" slot="end" id="present-alert">
-                                <ion-icon class="" :icon="informationCircle" slot="end"></ion-icon>
-                            </ion-button>
 
-                            <ion-alert
-                trigger="present-alert"
-                header="Neuer Zählerstand"
-                message=" Der neue Zählerstand ist der aktuelle Stand, den dein Stromzähler im Moment anzeigt. Er wird mit deinem Startzählerstand verglichen, um deinen tatsächlichen Stromverbrauch zu berechnen.
+<div class="label-row">
+    <ion-text class="description">
+        Neuer Zählerstand
+    </ion-text>
+    <ion-button fill="clear" id="present-alert" class="info-Button">
+        <ion-icon :icon="informationCircle"></ion-icon>
+    </ion-button>
 
-Du findest diesen Wert direkt an deinem physischen Stromzähler (meist auf dem digitalen Display oder dem Rollenzählwerk).
+                        <ion-alert
+                            trigger="present-alert"
+                            header="Neuer Zählerstand"
+                            message=" Der neue Zählerstand ist der aktuelle Stand, den dein Stromzähler im Moment anzeigt. Er wird mit deinem Startzählerstand verglichen, um deinen tatsächlichen Stromverbrauch zu berechnen.
 
-Trag hier einfach den aktuellen Zählerstand in Kilowattstunden (kWh) ein, ohne Nachkommastellen."
-:buttons="alertButtons"
-></ion-alert>
-                            </ion-input>
-                        
-                    </ion-item>
-                    <ion-button @click="saveNewReading"
-                    expand="block" size="default" class="custom-button" color="light">
-                                Stand jetzt speichern
-                    </ion-button>
+                                    Du findest diesen Wert direkt an deinem physischen Stromzähler (meist auf dem digitalen Display oder dem Rollenzählwerk).
+
+                                    Trag hier einfach den aktuellen Zählerstand in Kilowattstunden (kWh) ein, ohne Nachkommastellen."
+                            :buttons="alertButtons"
+                        ></ion-alert>
+                        </div>
+                        <!-- Ein eigener Rahmen-Container für das Input -->
+                        <div class="custom-input-wrapper">
+                            <ion-input class="custom-input" type="number" placeholder="42XX kWh" v-model="readingInput">
+                        </ion-input>
+                        </div>                            
+                        <ion-button @click="saveNewReading" expand="block"  class="custom-button">
+                                    Stand jetzt speichern
+                        </ion-button>
             </ion-card-content>
 
             </ion-card>
@@ -242,43 +262,11 @@ Trag hier einfach den aktuellen Zählerstand in Kilowattstunden (kWh) ein, ohne 
 
 
 
-    </IonPage>
+    </ion-page>
 </template>
 
 <style scoped>
-ion-card-header.lastreading {
-    border-bottom: 1px solid #000000;
-}
 
-.custom-box {
-    margin: 0 0;
-}
 
-.custom-button {
-    margin: 1rem 16px;
-    --border-radius: 0.4rem;
-}
-
-ion-input{
-    --background: #FFFFFF;
-    --color: #000000;
-    --placeholder-color: #666666; 
-    --placeholder-opacity: 1;
-    margin-top: 0.6rem;   
-    margin-left: 0;        
-    text-align: center;
-    --padding-start: 5.5rem; 
-    --padding-end: 0.5rem;
-}
-
-ion-icon {
-    padding-right: 0.5rem;
-    font-size: 1.5rem;
-}
-
-ion-alert {
-  --height: auto;
-  white-space: pre-line;
-}
 
 </style>

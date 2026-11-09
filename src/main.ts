@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import router from './router/index.ts'
 import App from './App.vue'
 import { IonicVue } from '@ionic/vue'
+import './style.css';
 
 // Ionic CSS
 import '@ionic/vue/css/core.css'

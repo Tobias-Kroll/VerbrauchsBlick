@@ -2,7 +2,7 @@
 import { 
   IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, 
   IonPage, IonRouterOutlet, IonModal, IonContent, 
-  IonToolbar, IonTitle, IonButtons, IonButton, IonToggle
+  IonToolbar, IonTitle, IonButtons, IonButton, IonToggle, IonItem
 } from '@ionic/vue';
 import { homeOutline, documentTextOutline, trashOutline, warningOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
@@ -58,17 +58,17 @@ localStorage.clear();
       </ion-tab-bar>
     </ion-tabs>
 
-          <ion-modal ref="modal">
-            <ion-header>
-              <ion-toolbar>
+          <ion-modal ref="modal" class="ion-padding">
+
+              <ion-toolbar class="left-title-toolbar">
                 <ion-title>Löschen</ion-title>
                 <ion-buttons slot="end">
                   <ion-button color="light" @click="closeResetModal()">Abbrechen</ion-button>
                 </ion-buttons>
                 </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding">
-              <ion-grid>
+
+            <ion-item>
+              <ion-grid class="modal-content">
                  <!-- Warnung mit Icon (Row & Col) -->
                 <ion-row class="ion-align-items-center">
                   <ion-col size="2" class="ion-text-center">
@@ -88,14 +88,12 @@ localStorage.clear();
                     </p>
                   </ion-col>
                 </ion-row>
-                <ion-row class="ion-align-items-center">
-                  <ion-col>
+
                   <ion-toggle
                   v-model="isDeleteEnabled" 
                   :enable-on-off-labels="true">
                   </ion-toggle>
-                  </ion-col>
-                </ion-row>
+
                 <ion-row>
                   <ion-col>
                     <ion-button @click="deleteAll" :disabled="!isDeleteEnabled" color="danger">
@@ -105,26 +103,12 @@ localStorage.clear();
                 </ion-row>            
               
               </ion-grid>
-              </ion-content>
+              </ion-item>
           </ion-modal>
 
   </ion-page>
 </template>
 
 <style>
-  ion-modal {
-    --height: 60%;
-    --border-radius: 16px;
-    --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  }
 
-   ion-modal::part(backdrop) {
-    background: rgba(209, 213, 219);
-    opacity: 1;
-  } 
-
-    ion-modal ion-toolbar {
-    --background: rgb(14 116 144);
-    --color: white;
-  }
 </style>

@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { IonPage, IonCard, IonCardContent, IonCardHeader, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonToast, IonDatetime, IonAlert } from '@ionic/vue';
 import ContractInputField from '../components/ContractInputField.vue'
-import PrimaryButton from '../components/buttons/PrimaryButton.vue'
 import { ref, computed, onMounted } from 'vue';
 import type { IAppData } from '../models/IAppData.ts';
 import { informationCircle } from 'ionicons/icons';
-import { star } from 'ionicons/icons';
+
 
 const basePrice = ref<number>();
 const pricePerkWh = ref<number>();
@@ -16,6 +15,7 @@ const savedContractData = ref<IAppData>();
 const startReadingInput = ref<number>();
 const startDateInput = ref<string>();
 
+const alertRef = ref();
 const alertButtons = ['Verstanden'];
 
 const setIsToastOpen = (state: boolean) => {
@@ -183,11 +183,11 @@ console.log("Gespeichert:", savedContractData.value);
 <ion-page>
   <ion-header>
     <ion-toolbar>
-      <ion-title>Header</ion-title>
-    </ion-toolbar>
+      <ion-title>Vertragsübersicht</ion-title>
+  </ion-toolbar>
   </ion-header>
 
-  <ion-content :fullscreen="true" class="ion-padding">
+  <ion-content class="ion-padding">
 
     <ion-toast
   :is-open="isToastOpen"
@@ -199,11 +199,14 @@ console.log("Gespeichert:", savedContractData.value);
   
 ></ion-toast>
 
-    <IonTitle> Vertragsübersicht</IonTitle>
-    
-      
+      <ion-card>
+        <ion-card-header>
+          <ion-text>Preisangaben</ion-text>  
+        </ion-card-header>
+        
+        <ion-card-content>
         <ContractInputField 
-                    title="Grundpreis (monatlich)"
+                    title="Monatlicher Grundpreis"
                     v-model="basePrice"
                     placeholderValue="8"
                     text="Bitte Grundpreis hinterlegen"
@@ -219,7 +222,7 @@ console.log("Gespeichert:", savedContractData.value);
         <ContractInputField 
                     title="Preis pro kWh"
                     v-model="pricePerkWh"
-                    placeholderValue="0.34"
+                    placeholderValue="34,78"
                     text="Bitte den Preis pro kWh hinterlegen"
                     unittext="ct"
                     step-value="0.01"
@@ -230,7 +233,7 @@ Du findest ihn in der Regel auf deiner Jahresabrechnung bei der Verbrauchsaufste
 
 Hinweis: Preisangabe in Cent"
                     /> 
-        
+
         <ContractInputField 
                     title="Monatlicher Abschlag"
                     v-model="monthlyInstallment"
@@ -244,7 +247,15 @@ Du findest ihn in der Regel auf deiner Jahresabrechnung im Abschnitt zu den Absc
 
 Trag hier einfach den monatlichen Betrag in Euro ein, den du aktuell an deinen Anbieter zahlst (z. B. 56,00€)."
                     /> 
-      
+                    </ion-card-content>                    
+        </ion-card>
+
+    <ion-text color="danger">Bitte gib alle Beträge als Bruttopreise an. Damit die gesetzliche MwSt. in den Berechnungen enthalten ist.</ion-text>
+        <ion-card>
+        <ion-card-header>
+          <ion-text>Turnusdetails</ion-text>  
+        </ion-card-header>
+        <ion-card-content>
         <ContractInputField 
                     title="Zählerstand bei Turnusbeginn"
                     v-model="startReadingInput"
@@ -258,55 +269,51 @@ Du findest ihn in der Regel auf deiner letzten Jahresabrechnung oder im Online-K
 
 Hinweis: Dieser Startzählerstand ist im Regelfall exakt der Endzählerstand aus deinem letzten Abrechnungsjahr."
                     />            
-        
-        <ion-card>
-          
-          <ion-card-header>
-            <ion-card-title>Turnusbeginn </ion-card-title>
-          </ion-card-header>
-          
-          <ion-card-content class="content" >
-            <ion-item lines="none" class="item">      
-              <ion-datetime-button class="date-button" datetime = "datetime" 
-                :class="{ 'has-date': startDateInput, 'empty-date': !startDateInput }">
-              </ion-datetime-button>       
-              <ion-button class="ion-no-padding" id="present-alert">
-                <ion-icon class="icon ion-no-margin" slot="end" :icon="informationCircle"></ion-icon>
-              </ion-button> 
-              <ion-alert
-                trigger="present-alert"
-                header="Turnusbeginn"
-                message=" Der Turnusbeginn ist das Startdatum deines aktuellen Abrechnungszeitraums – also der Tag, ab dem dein neues Abrechnungsjahr läuft (in der Regel genau ein Jahr minus ein Tag).
 
-Du findest dieses Datum meist auf deiner letzten Jahresabrechnung unter „Abrechnungszeitraum“ oder in deinem Vertrag.
+               
+              <ion-grid>
+                <ion-label>Turnusstart</ion-label>
+              <ion-row class="ion-align-items-center">  
+                <ion-col size="5">
+                  <ion-datetime-button class="date-button" datetime = "datetime" 
+                    :class="{ 'has-date': startDateInput, 'empty-date': !startDateInput }">
+                <p class="text" v-show="!startDateInput || startDateInput === '0'">Bitte den Turnusbeginn hinterlegen</p>
+                <ion-modal :keep-contents-mounted = "true">
+                  <IonDatetime id="datetime" v-model="startDateInput" presentation="date" size="cover"></IonDatetime>
+                </ion-modal>                    
+                  </ion-datetime-button>                    
+                </ion-col>
+                <ion-col>
+                  <ion-button  fill="clear" class="ion-no-padding ion-no-margin info-Button" @click="alertRef.$el.present()">
+                    <ion-icon class="icon ion-no-margin" slot="end" :icon="informationCircle"></ion-icon>
+                  </ion-button> 
 
-Hinweis: Das ist meist der Tag direkt nach dem Ende deines vorherigen Abrechnungszeitraums. Lief dein letztes Abrechnungsjahr beispielsweise vom 12.07.2025 bis 11.07.2026, beginnt dein neuer Turnus am 12.07.2026 und endet am 11.07.2027."
-                :buttons="alertButtons"
-              ></ion-alert>
-            
-            </ion-item>
-            <p class="text" v-show="!startDateInput || startDateInput === '0'">Bitte den Turnusbeginn hinterlegen</p>
-            <ion-modal :keep-contents-mounted = "true">
-              <IonDatetime id="datetime" v-model="startDateInput" presentation="date" size="cover"></IonDatetime>
-            </ion-modal>
+                  <ion-alert
+                    ref="alertRef"
+                    header="Turnusbeginn"
+                    message=" Der Turnusbeginn ist das Startdatum deines aktuellen Abrechnungszeitraums – also der Tag, ab dem dein neues Abrechnungsjahr läuft (in der Regel genau ein Jahr minus ein Tag).
+
+    Du findest dieses Datum meist auf deiner letzten Jahresabrechnung unter „Abrechnungszeitraum“ oder in deinem Vertrag.
+
+    Hinweis: Das ist meist der Tag direkt nach dem Ende deines vorherigen Abrechnungszeitraums. Lief dein letztes Abrechnungsjahr beispielsweise vom 12.07.2025 bis 11.07.2026, beginnt dein neuer Turnus am 12.07.2026 und endet am 11.07.2027."
+                    :buttons="alertButtons"
+                  ></ion-alert>
+                </ion-col>
+              </ion-row>
+          </ion-grid>
           </ion-card-content>
-
         </ion-card>  
       
-            
-    <ion-text color="danger">Bitte gib alle Beträge als Bruttopreise an. Die gesetzliche Mehrwertsteuer ist somit in den Berechnungen bereits enthalten.</ion-text>
+
+
+  <ion-button class="customButtonContract"
+    @click="saveContractData"
+    :disabled="!canSave">
+    Änderungen speichern
+  </ion-button>
+
 
   </ion-content>
-
-  <ion-footer>
-    <ion-toolbar class="ion-text-center">
-      <PrimaryButton @click="saveContractData"
-        :color=" !canSave ? 'medium' : 'primary'"
-        :disabled="!canSave"
-        text = "Änderungen speichern"
-      />
-    </ion-toolbar>  
-  </ion-footer>
 </ion-page>
 </template>
 
@@ -320,26 +327,19 @@ Hinweis: Das ist meist der Tag direkt nach dem Ende deines vorherigen Abrechnung
   margin: -8px;
 }
 
-.icon {
-  margin: 16px;
-}
+
 
 .text {
   margin: 8px
 }
 
-/* Falls du über eine Klasse den Platzhalter steuern willst: */
 .empty-date::part(native) {
   color: #92949c; /* Das Ausgegraute */
 }
 
 .has-date::part(native) {
-  color: #000000; /* Das Schwarz wenn gewählt */
+  color: #000000; 
 }
 
-ion-alert {
-  --height: auto;
-  white-space: pre-line;
-}
 
 </style>
