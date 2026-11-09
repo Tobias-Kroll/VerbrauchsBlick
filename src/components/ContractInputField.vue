@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { IonCard, IonCardHeader, IonCardTitle, IonItem, IonIcon, IonInput, IonButton, IonAlert } from '@ionic/vue'
-import { pencilSharp, helpCircleOutline } from 'ionicons/icons'
+import { IonItem, IonIcon, IonInput, IonButton, IonAlert } from '@ionic/vue'
+import { pencilSharp, informationCircle } from 'ionicons/icons'
 import { ref, watch} from 'vue'
 
 const model = defineModel<number>(); 
@@ -40,16 +40,12 @@ watch(model, (newValue) => {
 </script>
 
 <template>
-  <ion-card>
+<div>
+    <ion-label position="stacked">{{ title }}</ion-label>
 
-     <ion-card-header class="card-header">
-        <ion-card-title class="card-title">
-            {{ title }}
-        </ion-card-title>
-    </ion-card-header>
 
-    <ion-card-content>
-        <ion-item lines="none">
+    
+   <ion-item lines="none">
             
                 <ion-input class="input-field"
                 fill="outline"
@@ -69,7 +65,7 @@ watch(model, (newValue) => {
                 </ion-button>
             
                 <ion-button fill="clear" slot="end" @click="setOpenInfoField(true)">
-                    <ion-icon :icon="helpCircleOutline" />
+                    <ion-icon class="icon ion-no-margin" slot="end" :icon="informationCircle"></ion-icon>
                 </ion-button>
                 <ion-alert
                   :is-open="isOpen"
@@ -85,10 +81,9 @@ watch(model, (newValue) => {
             {{text}}
         </p>    
 
-        </ion-card-content>
+       </div>
 
         
-  </ion-card>
 </template>
 
 <style scoped>
