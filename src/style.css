@@ -2,6 +2,11 @@
    GLOBALES IONIC APP STYLING
    ========================================== */
 
+
+html {
+  color-scheme: light;
+}
+
 /* Setzt das globale Hintergrundbild für alle ion-content Bereiche */
 ion-content {
   --background: url('./assets/shapes/background-waves.jpg') no-repeat center center / cover !important;
@@ -69,7 +74,7 @@ ion-card-header {
 }
 
 ion-card.styleMainFeature {
- height: 50%;
+ height: auto;
 }
 
 ion-card-content {
@@ -124,6 +129,20 @@ ion-grid.styleReadingOutput::after {
   height: 80% !important;
   max-height: 80% !important;
   border-radius: 20px ;
+}
+
+ion-grid.mid-main-part {
+  position: relative;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 16px; /* Wichtig: Gibt dem Grid Platz für die Linie nach unten! */
+  margin-bottom: 16px;
+  border-bottom: 1px solid #d6e0ea; /* Der einfachste und stabilste Weg für eine Trennlinie! */
+}
+
+ion-badge {
+  color: #113a6e;
+  background-color: #ffffff;
 }
 
 
