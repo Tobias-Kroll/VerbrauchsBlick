@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { 
   IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, 
-  IonPage, IonRouterOutlet, IonModal, IonContent, 
+  IonPage, IonRouterOutlet, IonModal,
   IonToolbar, IonTitle, IonButtons, IonButton, IonToggle, IonItem
 } from '@ionic/vue';
 import { homeOutline, documentTextOutline, trashOutline, warningOutline } from 'ionicons/icons';
@@ -69,7 +69,7 @@ localStorage.clear();
 
             <ion-item>
               <ion-grid class="modal-content">
-                 <!-- Warnung mit Icon (Row & Col) -->
+
                 <ion-row class="ion-align-items-center">
                   <ion-col size="2" class="ion-text-center">
                     <ion-icon :icon="warningOutline" size="large" color="warning"></ion-icon>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonInput, IonToast, IonContent, IonItem, IonLabel, IonAlert, onIonViewWillEnter } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonInput, IonToast, IonContent, IonAlert, onIonViewWillEnter,
+    IonButton, IonIcon, IonCard, IonCardHeader, IonCardContent, IonGrid, IonRow, IonCol, IonText} from '@ionic/vue';
 import { trashOutline, informationCircle } from 'ionicons/icons'
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref } from 'vue';
 import type { IAppData } from '../models/IAppData';
 import MainFeatureCard from '../components/MainFeatureCard.vue';
 

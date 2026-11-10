@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { IonPage, IonCard, IonCardContent, IonCardHeader, IonContent, IonHeader, IonTitle, IonToolbar, IonFooter, IonToast, IonDatetime, IonAlert } from '@ionic/vue';
+import { IonPage, IonCard, IonCardContent, IonCardHeader, IonContent, IonHeader, IonTitle, IonToolbar, IonToast, IonDatetime, IonAlert,
+  IonButton, IonIcon, IonGrid, IonRow, IonCol, IonText, IonDatetimeButton} from '@ionic/vue';
 import ContractInputField from '../components/ContractInputField.vue'
 import { ref, computed, onMounted } from 'vue';
 import type { IAppData } from '../models/IAppData.ts';
@@ -334,7 +335,7 @@ Hinweis: Dieser Startzählerstand ist im Regelfall exakt der Endzählerstand aus
 }
 
 .empty-date::part(native) {
-  color: #92949c; /* Das Ausgegraute */
+  color: #92949c; 
 }
 
 .has-date::part(native) {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
- import { IonText, IonLabel, IonGrid, IonRow, IonCol } from '@ionic/vue';
+ import { IonText, IonLabel, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardContent, IonIcon, IonBadge } from '@ionic/vue';
  import { logoEuro, flash, ellipse } from 'ionicons/icons';
- import { computed, onMounted, ref } from 'vue';
+ import { computed } from 'vue';
  import type { IAppData } from '../models/IAppData';
 
 
@@ -138,7 +138,7 @@ function debugging() {
   console.log("Differrenz:", balance.value );
 }
 
-// Hier wird die Funktion für die Home.vue freigegeben:
+
 defineExpose({
   debugging
 });
@@ -160,10 +160,10 @@ defineExpose({
 <!-- Zeile 1: Badge -->
 <ion-row class="ion-justify-content-center">
     <ion-col size="12" class="ion-text-center">
-        <!-- Punkt-Icon farblich umschalten: success (grün) oder danger (rot) -->
+
         <ion-icon :icon="ellipse" :color="isPlus ? 'success' : 'danger'"></ion-icon>
         
-        <!-- Badge-Inhalt mit v-if / v-else umschalten -->
+  
         <ion-badge :color="isPlus ? 'success' : 'danger'">
             <template v-if="isPlus">Du bist im Plus</template>
             <template v-else>Du bist im Minus</template>

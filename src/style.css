@@ -3,11 +3,13 @@
    ========================================== */
 
 
+/* Dark Mode erzwingt im Light-Modus belassen */
 html {
-  color-scheme: light;
+  --ion-color-step-50: #f9f9f9 !important;
+  color-scheme: light !important;
 }
 
-/* Setzt das globale Hintergrundbild für alle ion-content Bereiche */
+
 ion-content {
   --background: url('./assets/shapes/background-waves.jpg') no-repeat center center / cover !important;
 }
@@ -55,22 +57,22 @@ ion-toggle {
 ion-card {
     border-radius: 20px;
     background-color: #113a6e;
-    /* Mehrere Schatten-Ebenen: Ein weicher großer Schatten für die Tiefe + ein dichterer Naheffekt */
+
     box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.15);
     
-    /* Hebt die Karte optisch physisch ein Stück an */
+   
     transform: translateY(-2px);
 }
 ion-card-header {
     background-color: #113a6e !important;
     color: white !important;
-    padding-top: 14px !important;    /* Fester oberer Abstand */
-    padding-bottom: 14px !important; /* Fester unterer Abstand */
+    padding-top: 14px !important;   
+    padding-bottom: 14px !important; 
     padding-left: 16px !important;
     padding-right: 16px !important;
-    text-align: center !important;   /* Falls der Text zentriert sein soll */
-    font-size: 1.2rem !important;      /* Einheitliche Schriftgröße (entspricht ca. 16px) */
-    font-weight: 600 !important;     /* Angenehme Halbfett-Schrift */
+    text-align: center !important;   
+    font-size: 1.2rem !important;     
+    font-weight: 600 !important;     
 }
 
 ion-card.styleMainFeature {
@@ -87,7 +89,7 @@ ion-card-content {
     color: #113a6e;
     font-size: 1.1rem !important;
 }
-/* Der äußere Kasten bekommt den Rahmen und die abgerundeten Ecken */
+
 .custom-input-wrapper {
     border: 2px solid #d6e0ea;
     border-radius: 20px;
@@ -97,7 +99,11 @@ ion-card-content {
     margin-right: 16px;
 }
 
-/* Das eigentliche Eingabefeld im Inneren */
+#netlify-badge {
+  display: none !important;
+}
+
+
 ion-input.custom-input {
     --background: transparent;
     --color: #000000;
@@ -112,19 +118,18 @@ ion-grid.styleReadingOutput {
     padding-right: 0;
 }
 
-/* Die neue, eingekürzte Linie */
+
 ion-grid.styleReadingOutput::after {
     content: "";
     position: absolute;
     bottom: 0;
-    left: 16px;   /* Abstand zum linken Kartenrand */
-    right: 16px;  /* Abstand zum rechten Kartenrand */
-    height: 1px;  /* Dicke der Linie */
-    background-color: #d6e0ea; /* Farbe der Linie */
+    left: 16px;  
+    right: 16px;  
+    height: 1px;  
+    background-color: #d6e0ea; 
     text-align: center;
 }
 
-/* Zielt exakt und ausschließlich auf den Alert mit unserer Spezialklasse ab */
 .home-about-alert .alert-wrapper {
   height: 80% !important;
   max-height: 80% !important;
@@ -135,9 +140,8 @@ ion-grid.mid-main-part {
   position: relative;
   padding-left: 0;
   padding-right: 0;
-  padding-bottom: 16px; /* Wichtig: Gibt dem Grid Platz für die Linie nach unten! */
-  margin-bottom: 16px;
-  border-bottom: 1px solid #d6e0ea; /* Der einfachste und stabilste Weg für eine Trennlinie! */
+  padding-bottom: 16px; 
+  border-bottom: 1px solid #d6e0ea; 
 }
 
 ion-badge {
@@ -152,7 +156,7 @@ ion-text.description {
 
 .label-row {
     display: flex;
-    align-items: center; /* Zentriert Text und Button vertikal zueinander */
+    align-items: center; 
     margin-left: 16px;
     margin-right: 16px;
 }
@@ -161,14 +165,14 @@ ion-alert {
   white-space: pre-line;
 }
 
-/* Zwingt den Alert-Wrapper auf allen Bildschirmgrößen zu deiner Wunschhöhe */
+
 ion-alert .alert-wrapper {
   height: 60vh !important;
   max-height: 60vh !important;
 
 }
 
-/* Überschreibt die feste Ionic-Pixel-Begrenzung im Mobilmodus */
+
 @media screen and (max-width: 757px) {
   ion-alert .alert-message.sc-ion-alert-md,
   .ion-alert .alert-message {
@@ -210,9 +214,11 @@ ion-alert .alert-wrapper {
   --background: #c0c0c0;
 }
 
-/* Allgemeine Resets für saubere Darstellung */
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+:root {
+  color-scheme: light only;
 }
 
+body {
+  --background: #ffffff !important;
+  background: #ffffff !important;
+}

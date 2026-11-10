@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IonItem, IonIcon, IonInput, IonButton, IonAlert } from '@ionic/vue'
+import { IonItem, IonIcon, IonInput, IonButton, IonAlert, IonLabel } from '@ionic/vue'
 import { pencilSharp, informationCircle } from 'ionicons/icons'
 import { ref, watch} from 'vue'
 
