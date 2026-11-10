@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonInput, IonToast, IonContent, IonItem, IonLabel, IonAlert } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonInput, IonToast, IonContent, IonItem, IonLabel, IonAlert, onIonViewWillEnter } from '@ionic/vue';
 import { trashOutline, informationCircle } from 'ionicons/icons'
 import { computed, ref, onMounted } from 'vue';
 import type { IAppData } from '../models/IAppData';
+import MainFeatureCard from '../components/MainFeatureCard.vue';
 
 
 
 
+const cardRef = ref<any>(null);
 const readingInput = ref<number>();
 const readingValueOutput =ref<number>(); //lertzter Zählstand
 const readingDateOutput =ref<string>(); //letztes erfasstes Datum 
@@ -41,7 +43,7 @@ const startReading = computed (() => {
 });
     
 //Beim Seite laden:
-onMounted(() => {
+onIonViewWillEnter(() => {
   const storedData = localStorage.getItem('AppData');
 
   if(storedData) {
@@ -107,7 +109,7 @@ function saveNewReading(){
 
     
     homeSavedData.value.meterReading.push({
-    readingValue: Number(readingInput.value),
+    readingValue: Math.round(Number(readingInput.value)),
     readingDate: new Date().toISOString().split('T')[0],
 })
 
@@ -117,11 +119,11 @@ console.log(homeSavedData.value.meterReading);
 localStorage.setItem('AppData', JSON.stringify(homeSavedData.value));
 console.log("Gespeichert:", homeSavedData.value);
 
-readingValueOutput.value = Number(readingInput.value);
+readingValueOutput.value = Math.round(Number(readingInput.value));
 readingDateOutput.value = new Date().toISOString().split('T')[0];
 readingInput.value = undefined;
 
-
+cardRef.value?.debugging();
 };
 
 function deleteLastReading () {
@@ -175,6 +177,7 @@ function deleteLastReading () {
                             Aus zeittechnischen Gründen startet ihr hier erst einmal mit Version 1.0 (einem minimal funktionsfähigen Produkt). Ich habe aber schon viele Ideen für zukünftige Features, darunter zum Beispiel:
 
                             - Dynamische Anpassung von monatlichen Abschlägen
+                            -- Variable Verbrauchskosten und Berücksichtigung von Preisänderungen
                             - Detaillierte Einblicke in euren Verbrauch (z. B. Diagramme und Prognosen)
                             - Und vieles mehr!
 
@@ -193,11 +196,7 @@ function deleteLastReading () {
                 position="bottom" 
                 color="danger"></ion-toast>
         <!--Hauptfeature-->
-            <ion-card class="styleMainFeature">
-                <ion-card-header> Hauptfeature </ion-card-header>
-                    
-                <ion-card-content class="styleMainFeatureContent">cooming soon...</ion-card-content>
-            </ion-card>
+            <MainFeatureCard ref="cardRef" :app-data="homeSavedData"></MainFeatureCard>
 
 
         <!--Meterreadings-->
