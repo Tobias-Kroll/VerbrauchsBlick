@@ -97,7 +97,8 @@ const totalGrossBasePrice = computed(() => {
 
 const totalPrice = computed(() => {
     if (!lastReading.value) return 0;
-    return totalConsumptionPrice.value + totalGrossBasePrice.value;
+    const totalPriceTotal = totalConsumptionPrice.value + totalGrossBasePrice.value;
+    return Number(totalPriceTotal.toFixed(2));
 });
 
 const totalAdvancePayments = computed(() => {
