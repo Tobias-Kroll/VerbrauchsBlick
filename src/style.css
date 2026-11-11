@@ -15,7 +15,17 @@ ion-content {
 }
 
 ion-toolbar {
-  text-align: center;
+    position: relative;
+    text-align: center;
+}
+
+ion-toolbar ion-title {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    text-align: center;
+    pointer-events: none;
 }
 
 ion-header {
@@ -193,6 +203,8 @@ ion-alert .alert-wrapper {
 
 .info-Button{
   --color:  #3076d1;
+  margin-left: none;
+
 }
 .delete-btn{
   --color:  #113a6e;
